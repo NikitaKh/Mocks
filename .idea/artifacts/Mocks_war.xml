@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Mocks:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>Mocks</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="Mocks-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="Mocks:war exploded" />
+    </root>
+  </artifact>
+</component>
