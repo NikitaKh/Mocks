@@ -60,6 +60,7 @@ public class servletAdd extends HttpServlet {
         JsonObject jObj = gson.fromJson(String.valueOf(sb), JsonObject.class);
 
         request.setCharacterEncoding("UTF-8");
+
         String name = jObj.get("name").getAsString();
         String surname = jObj.get("surname").getAsString();
         double salary = jObj.get("salary").getAsDouble();
@@ -72,4 +73,5 @@ public class servletAdd extends HttpServlet {
         PrintWriter pw = response.getWriter();
         pw.print(gson.toJson(model.getFromList()));
     }
+
 }

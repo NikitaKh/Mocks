@@ -1,9 +1,10 @@
 package ru.ibs;
 
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import ru.ibs.logic.Dataset;
 import ru.ibs.logic.Model;
-import ru.ibs.logic.User;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,13 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 @WebServlet(urlPatterns = "/get")
 public class servletList extends HttpServlet {
 
     Model model = Model.getInstance();
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    /*
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html;charset=utf-8");
         PrintWriter pw = response.getWriter();
@@ -61,6 +63,35 @@ public class servletList extends HttpServlet {
                     "<h3>Id должен быть больше 0!</h3><br/>" +
                     "<a href=\"index.jsp\">Домой</a>" +
                     "</html>");
+        }
+    }
+     */
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=utf-8");
+
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        PrintWriter pw = response.getWriter();
+
+        if (id == 0) {
+            pw.print(gson.toJson(model.getFromList()));
+        } else if (id > 0) {
+            if (id > model.getFromList().size()) {
+                Dataset dataset = new Dataset();
+                dataset.code = "INTERNAL_ERROR";
+                dataset.message = "Пользователя с таким ID не существует!";
+                pw.print(gson.toJson(dataset));
+            } else {
+                pw.print(gson.toJson(model.getFromList().get(id)));
+            }
+        } else {
+            Dataset dataset = new Dataset();
+            dataset.code = "INTERNAL_ERROR";
+            dataset.message = "Id должен быть больше 0!";
+            pw.print(gson.toJson(dataset));
         }
     }
 }
