@@ -1,19 +1,19 @@
 package ru.ibs;
 
 
-import com.sun.deploy.net.HttpRequest;
-import com.sun.deploy.net.HttpResponse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import ru.ibs.logic.Model;
 import ru.ibs.logic.User;
 
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @WebServlet(urlPatterns = "/add")
@@ -21,6 +21,7 @@ public class servletAdd extends HttpServlet {
 
     private AtomicInteger counter = new AtomicInteger(5);
     Model model = Model.getInstance();
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /*
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,6 +44,32 @@ public class servletAdd extends HttpServlet {
 
      */
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        StringBuffer sb = new StringBuffer();
+        String line;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR");
+        }
 
+        JsonObject jObj = gson.fromJson(String.valueOf(sb), JsonObject.class);
+
+        request.setCharacterEncoding("UTF-8");
+        String name = jObj.get("name").getAsString();
+        String surname = jObj.get("surname").getAsString();
+        double salary = jObj.get("salary").getAsDouble();
+
+        User user = new User(name, surname, salary);
+        model.add(counter.getAndIncrement(), user);
+
+        response.setContentType("application/json;charset=utf-8");
+
+        PrintWriter pw = response.getWriter();
+        pw.print(gson.toJson(model.getFromList()));
+    }
 }
